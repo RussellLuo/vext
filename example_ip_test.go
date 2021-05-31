@@ -7,11 +7,11 @@ import (
 	v "github.com/RussellLuo/validating/v2"
 )
 
-func Example_IP() {
+func ExampleIP() {
 	zeroOrIP := vext.ZeroOr(vext.IP())
 
-	ip := "127.0.0."
-	if err := v.Validate(v.Value(&ip, zeroOrIP)); err != nil {
+	value := "127.0.0."
+	if err := v.Validate(v.Value(&value, zeroOrIP)); err != nil {
 		fmt.Printf("err: %v\n", err)
 	}
 
