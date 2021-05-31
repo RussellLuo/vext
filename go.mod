@@ -1,4 +1,4 @@
-module github.com/RussellLuo/validating-ext
+module github.com/RussellLuo/vext
 
 go 1.14
 

@@ -1,4 +1,4 @@
-# validating-ext
+# vext
 
 Extension validator factories for [validating][1].
 
@@ -7,7 +7,7 @@ Extension validator factories for [validating][1].
 
 
 ```bash
-$ go get -u github.com/RussellLuo/validating-ext
+$ go get -u github.com/RussellLuo/vext
 ```
 
 ## Documentation
@@ -21,4 +21,4 @@ Check out the [Godoc][2].
 
 
 [1]: https://github.com/RussellLuo/validating
-[2]: https://pkg.go.dev/github.com/RussellLuo/validating-ext
+[2]: https://pkg.go.dev/github.com/RussellLuo/vext

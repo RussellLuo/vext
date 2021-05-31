@@ -3,8 +3,8 @@ package vext_test
 import (
 	"fmt"
 
-	"github.com/RussellLuo/validating-ext"
 	v "github.com/RussellLuo/validating/v2"
+	"github.com/RussellLuo/vext"
 )
 
 func ExampleIP() {
