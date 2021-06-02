@@ -7,7 +7,7 @@ import (
 	"github.com/RussellLuo/vext"
 )
 
-func ExampleIP() {
+func Example_ip() {
 	zeroOrIP := vext.ZeroOr(vext.IP())
 
 	value := "127.0.0."
@@ -17,4 +17,16 @@ func ExampleIP() {
 
 	// Output:
 	// err: INVALID(invalid IP)
+}
+
+func Example_email() {
+	zeroOrEmail := vext.ZeroOr(vext.Email())
+
+	value := "foo#example.com"
+	if err := v.Validate(v.Value(&value, zeroOrEmail)); err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
+
+	// Output:
+	// err: INVALID(invalid email)
 }

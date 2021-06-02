@@ -27,8 +27,8 @@ func ZeroOr(validator v.Validator) v.Validator {
 	})
 }
 
-// NewStringValidatorFactory creates a validator factory, which will create a
-// validator for validating a string value.
+// NewStringValidatorFactory creates a leaf validator factory, which will
+// create a validator for validating a string value.
 //
 // The final validator will succeed if isValid returns true for a given string
 // value. If it fails, the INVALID message is specified by msg.
