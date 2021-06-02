@@ -1,8 +1,6 @@
 package vext
 
 import (
-	"net"
-	"regexp"
 	"time"
 
 	v "github.com/RussellLuo/validating/v2"
@@ -29,50 +27,37 @@ func ZeroOr(validator v.Validator) v.Validator {
 	})
 }
 
-// IP is a leaf validator factory used to create a validator, which will
-// succeed when the field's value is a valid textual representation of an IP address.
-func IP() (mv *v.MessageValidator) {
-	mv = &v.MessageValidator{
-		Message: "invalid IP",
-		Validator: v.Func(func(field v.Field) v.Errors {
-			switch t := field.ValuePtr.(type) {
-			case *string:
-				if net.ParseIP(*t) == nil {
-					return v.NewErrors(field.Name, v.ErrInvalid, mv.Message)
+// NewStringValidatorFactory creates a validator factory, which will create a
+// validator for validating a string value.
+//
+// The final validator will succeed if isValid returns true for a given string
+// value. If it fails, the INVALID message is specified by msg.
+func NewStringValidatorFactory(isValid func(string) bool, msg string) func() *v.MessageValidator {
+	return func() (mv *v.MessageValidator) {
+		mv = &v.MessageValidator{
+			Message: msg,
+			Validator: v.Func(func(field v.Field) v.Errors {
+				switch t := field.ValuePtr.(type) {
+				case *string:
+					if !isValid(*t) {
+						return v.NewErrors(field.Name, v.ErrInvalid, mv.Message)
+					}
+					return nil
+				default:
+					return v.NewErrors(field.Name, v.ErrUnsupported, "is unsupported")
 				}
-				return nil
-			default:
-				return v.NewErrors(field.Name, v.ErrUnsupported, "is unsupported")
-			}
-		}),
+			}),
+		}
+		return
 	}
-	return
 }
 
-func Email() *v.MessageValidator {
-	return v.Match(regexpEmail).Msg("invalid email")
-}
-
+// Time is a leaf validator factory used to create a validator, which will
+// succeed when the field's value matches the given time format specified by layout.
 func Time(layout string) (mv *v.MessageValidator) {
-	mv = &v.MessageValidator{
-		Message: "invalid time",
-		Validator: v.Func(func(field v.Field) v.Errors {
-			switch t := field.ValuePtr.(type) {
-			case *string:
-				if _, err := time.Parse(layout, *t); err != nil {
-					return v.NewErrors(field.Name, v.ErrInvalid, mv.Message)
-				}
-				return nil
-			default:
-				return v.NewErrors(field.Name, v.ErrUnsupported, "is unsupported")
-			}
-		}),
+	isValid := func(value string) bool {
+		_, err := time.Parse(layout, value)
+		return err == nil
 	}
-	return
-
+	return NewStringValidatorFactory(isValid, "invalid time")()
 }
-
-var (
-	// This email regexp is borrowed from https://github.com/badoux/checkmail
-	regexpEmail = regexp.MustCompile(`(?m)^(((((((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?([A-Za-z0-9!#-'*+\/=?^_\x60{|}~-])+((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?)|(((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?"((\s? +)?(([!#-[\]-~])|(\\([ -~]|\s))))*(\s? +)?"))?)?(((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?<(((((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?(([A-Za-z0-9!#-'*+\/=?^_\x60{|}~-])+(\.([A-Za-z0-9!#-'*+\/=?^_\x60{|}~-])+)*)((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?)|(((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?"((\s? +)?(([!#-[\]-~])|(\\([ -~]|\s))))*(\s? +)?"))@((((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?(([A-Za-z0-9!#-'*+\/=?^_\x60{|}~-])+(\.([A-Za-z0-9!#-'*+\/=?^_\x60{|}~-])+)*)((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?)|(((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?\[((\s? +)?([!-Z^-~]))*(\s? +)?\]((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?)))>((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?))|(((((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?(([A-Za-z0-9!#-'*+\/=?^_\x60{|}~-])+(\.([A-Za-z0-9!#-'*+\/=?^_\x60{|}~-])+)*)((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?)|(((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?"((\s? +)?(([!#-[\]-~])|(\\([ -~]|\s))))*(\s? +)?"))@((((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?(([A-Za-z0-9!#-'*+\/=?^_\x60{|}~-])+(\.([A-Za-z0-9!#-'*+\/=?^_\x60{|}~-])+)*)((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?)|(((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?\[((\s? +)?([!-Z^-~]))*(\s? +)?\]((((\s? +)?(\(((\s? +)?(([!-'*-[\]-~]*)|(\\([ -~]|\s))))*(\s? +)?\)))(\s? +)?)|(\s? +))?))))$`)
-)
