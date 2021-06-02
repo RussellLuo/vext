@@ -3,6 +3,7 @@ package vext
 import (
 	"net"
 	"regexp"
+	"time"
 
 	v "github.com/RussellLuo/validating/v2"
 )
@@ -50,6 +51,25 @@ func IP() (mv *v.MessageValidator) {
 
 func Email() *v.MessageValidator {
 	return v.Match(regexpEmail).Msg("invalid email")
+}
+
+func Time(layout string) (mv *v.MessageValidator) {
+	mv = &v.MessageValidator{
+		Message: "invalid time",
+		Validator: v.Func(func(field v.Field) v.Errors {
+			switch t := field.ValuePtr.(type) {
+			case *string:
+				if _, err := time.Parse(layout, *t); err != nil {
+					return v.NewErrors(field.Name, v.ErrInvalid, mv.Message)
+				}
+				return nil
+			default:
+				return v.NewErrors(field.Name, v.ErrUnsupported, "is unsupported")
+			}
+		}),
+	}
+	return
+
 }
 
 var (
