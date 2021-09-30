@@ -11,10 +11,7 @@ import (
 //
 // ZeroOr will return the last error from the given validator if it fails.
 func ZeroOr(validator v.Validator) v.Validator {
-	return v.Any(
-		v.Not(v.Nonzero()),
-		validator,
-	).UseLastError()
+	return v.Any(v.Zero(), validator).LastError()
 }
 
 // NewStringValidatorFactory creates a leaf validator factory, which will
