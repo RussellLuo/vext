@@ -3,19 +3,20 @@ on: [push,pull_request]
 jobs:
   lint:
     name: Lint
+    if: false # Temporarily disable lint, see https://github.com/golangci/golangci-lint/issues/2649
     runs-on: ubuntu-latest
     steps:
-    - name: Set up Go 1.13
+    - name: Set up Go 1.18
       uses: actions/setup-go@v1
       with:
-        go-version: 1.13
+        go-version: 1.18
       id: go
 
     - name: Check out code
       uses: actions/checkout@v1
 
     - name: Intsall GolangCI-Lint
-      run: curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b . latest
+      run: curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh| sh -s -- -b . v1.45.0
 
     - name: Run lint
       run: ./golangci-lint run ./... --skip-dirs benchmarks
@@ -27,10 +28,10 @@ jobs:
       matrix:
         os: [macOS-latest,ubuntu-latest]
     steps:
-    - name: Set up Go 1.13
+    - name: Set up Go 1.18
       uses: actions/setup-go@v1
       with:
-        go-version: 1.13
+        go-version: 1.18
       id: go
 
     - name: Check out code
