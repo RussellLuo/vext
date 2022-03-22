@@ -7,7 +7,7 @@ Extension validator factories for [validating][1].
 
 
 ```bash
-$ go get -u github.com/RussellLuo/vext
+$ go get github.com/RussellLuo/vext@latest
 ```
 
 ## Documentation

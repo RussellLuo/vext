@@ -3,41 +3,9 @@ package vext
 import (
 	"time"
 
-	v "github.com/RussellLuo/validating/v2"
+	v "github.com/RussellLuo/validating/v3"
+	"github.com/asaskevich/govalidator"
 )
-
-// ZeroOr is a composite validator factory used to create a validator, which will
-// succeed if the field's value is zero, or if the given validator succeeds.
-//
-// ZeroOr will return the last error from the given validator if it fails.
-func ZeroOr(validator v.Validator) v.Validator {
-	return v.Any(v.Zero(), validator).LastError()
-}
-
-// NewStringValidatorFactory creates a leaf validator factory, which will
-// create a validator for validating a string value.
-//
-// The final validator will succeed if isValid returns true for a given string
-// value. If it fails, the INVALID message is specified by msg.
-func NewStringValidatorFactory(isValid func(string) bool, msg string) func() *v.MessageValidator {
-	return func() (mv *v.MessageValidator) {
-		mv = &v.MessageValidator{
-			Message: msg,
-			Validator: v.Func(func(field v.Field) v.Errors {
-				switch t := field.ValuePtr.(type) {
-				case *string:
-					if !isValid(*t) {
-						return v.NewErrors(field.Name, v.ErrInvalid, mv.Message)
-					}
-					return nil
-				default:
-					return v.NewErrors(field.Name, v.ErrUnsupported, "is unsupported")
-				}
-			}),
-		}
-		return
-	}
-}
 
 // Time is a leaf validator factory used to create a validator, which will
 // succeed when the field's value matches the given time format specified by layout.
@@ -46,5 +14,13 @@ func Time(layout string) (mv *v.MessageValidator) {
 		_, err := time.Parse(layout, value)
 		return err == nil
 	}
-	return NewStringValidatorFactory(isValid, "invalid time")()
+	return v.Is(isValid).Msg("invalid time")
+}
+
+func IP() *v.MessageValidator {
+	return v.Is(govalidator.IsIP).Msg("invalid IP")
+}
+
+func Email() *v.MessageValidator {
+	return v.Is(govalidator.IsEmail).Msg("invalid email")
 }
