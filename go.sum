@@ -1,5 +1,5 @@
-github.com/RussellLuo/validating/v3 v3.0.0-beta.1 h1:uvS1bibGqNFbL9sdT+T63A88vOq3UlVVYuqw1rZynF4=
-github.com/RussellLuo/validating/v3 v3.0.0-beta.1/go.mod h1:aXLMAOUVm1Abr2yLXA8g49WVSI6RiiCwn0TXv2iToU0=
+github.com/RussellLuo/validating/v3 v3.0.0 h1:CnUjHJgFMQRO3EVb6OGZmkX+5lYc6m5CTdldo+IG0jE=
+github.com/RussellLuo/validating/v3 v3.0.0/go.mod h1:aXLMAOUVm1Abr2yLXA8g49WVSI6RiiCwn0TXv2iToU0=
 github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d h1:Byv0BzEl3/e6D5CLfI0j/7hiIEtvGVFPCZ7Ei2oq8iQ=
 github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d/go.mod h1:WaHUgvxTVq04UNunO+XhnAqY/wQc+bxr74GqbsZ/Jqw=
 golang.org/x/exp v0.0.0-20220314205449-43aec2f8a4e7 h1:jynE66seADJbyWMUdeOyVTvPtBZt7L6LJHupGwxPZRM=
