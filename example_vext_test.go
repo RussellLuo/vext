@@ -37,3 +37,23 @@ func Example_email() {
 	// Output:
 	// err: INVALID(invalid email)
 }
+
+func Example_hash() {
+	value := "5d41402abc4b2a76b9719d911017c59" // 31 characters (one less than MD5)
+	if err := v.Validate(v.Value(value, vext.Hash("md5"))); err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
+
+	// Output:
+	// err: INVALID(invalid md5 hash)
+}
+
+func Example_isbn() {
+	value := ""
+	if err := v.Validate(v.Value(value, vext.ISBN(10))); err != nil {
+		fmt.Printf("err: %v\n", err)
+	}
+
+	// Output:
+	// err: INVALID(invalid ISBN 10)
+}
