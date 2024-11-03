@@ -6,8 +6,12 @@ import (
 
 	v "github.com/RussellLuo/validating/v3"
 	"github.com/asaskevich/govalidator"
+	"github.com/th0th/is-email-disposable/pkg/isemaildisposable"
+	"github.com/th0th/is-email-disposable/pkg/service/domain"
 	"golang.org/x/exp/slices"
 )
+
+var disposableDomainService isemaildisposable.DomainService
 
 // ASCII is a leaf validator factory used to create a validator, which will
 // succeed when the field's value contains only ASCII chars.
@@ -67,6 +71,40 @@ func DialString() *v.MessageValidator {
 // succeed when the field's value is an email.
 func Email() *v.MessageValidator {
 	return v.Is(govalidator.IsEmail).Msg("invalid email")
+}
+
+// EmailNonDisposable is a leaf validator factory used to create a validator, which will
+// succeed when the field's value is a non-disposable email address.
+// It uses the `is-email-disposable` package to check if the email domain is disposable.
+func EmailNonDisposable() *v.MessageValidator {
+	if disposableDomainService == nil {
+		disposableDomainService2, err := domain.New()
+		if err != nil {
+			panic(err)
+		}
+
+		disposableDomainService = disposableDomainService2
+	}
+
+	messageValidator := v.MessageValidator{
+		Message: "is disposable e-mail address",
+	}
+
+	messageValidator.Validator = v.Func(func(field *v.Field) v.Errors {
+		value, ok := field.Value.(string)
+		if !ok {
+			return v.NewUnsupportedErrors("EmailNonDisposable", field, "")
+		}
+
+		checkResult := disposableDomainService.Check(value)
+		if checkResult.IsDisposable {
+			return v.NewInvalidErrors(field, messageValidator.Message)
+		}
+
+		return nil
+	})
+
+	return &messageValidator
 }
 
 // Hash is a leaf validator factory used to create a validator, which will
