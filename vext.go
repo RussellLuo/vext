@@ -88,25 +88,11 @@ func EmailNonDisposable() *v.MessageValidator {
 		disposableEmail = disposableEmail2
 	})
 
-	messageValidator := v.MessageValidator{
-		Message: "is disposable e-mail address",
-	}
-
-	messageValidator.Validator = v.Func(func(field *v.Field) v.Errors {
-		value, ok := field.Value.(string)
-		if !ok {
-			return v.NewUnsupportedErrors("EmailNonDisposable", field, "")
-		}
-
+	isValid := func(value string) bool {
 		checkResult := disposableEmail.Check(value)
-		if checkResult.IsDisposable {
-			return v.NewInvalidErrors(field, messageValidator.Message)
-		}
-
-		return nil
-	})
-
-	return &messageValidator
+		return !checkResult.IsDisposable
+	}
+	return v.Is(isValid).Msg("is disposable e-mail address")
 }
 
 // Hash is a leaf validator factory used to create a validator, which will
