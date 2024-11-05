@@ -2,16 +2,18 @@ package vext
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	v "github.com/RussellLuo/validating/v3"
 	"github.com/asaskevich/govalidator"
-	"github.com/th0th/is-email-disposable/pkg/isemaildisposable"
-	"github.com/th0th/is-email-disposable/pkg/service/domain"
+	"github.com/th0th/disposableemail"
 	"golang.org/x/exp/slices"
 )
 
-var disposableDomainService isemaildisposable.DomainService
+var disposableEmail disposableemail.Service
+
+var once sync.Once
 
 // ASCII is a leaf validator factory used to create a validator, which will
 // succeed when the field's value contains only ASCII chars.
@@ -77,14 +79,14 @@ func Email() *v.MessageValidator {
 // succeed when the field's value is a non-disposable email address.
 // It uses the `is-email-disposable` package to check if the email domain is disposable.
 func EmailNonDisposable() *v.MessageValidator {
-	if disposableDomainService == nil {
-		disposableDomainService2, err := domain.New()
+	once.Do(func() {
+		disposableEmail2, err := disposableemail.New()
 		if err != nil {
 			panic(err)
 		}
 
-		disposableDomainService = disposableDomainService2
-	}
+		disposableEmail = disposableEmail2
+	})
 
 	messageValidator := v.MessageValidator{
 		Message: "is disposable e-mail address",
@@ -96,7 +98,7 @@ func EmailNonDisposable() *v.MessageValidator {
 			return v.NewUnsupportedErrors("EmailNonDisposable", field, "")
 		}
 
-		checkResult := disposableDomainService.Check(value)
+		checkResult := disposableEmail.Check(value)
 		if checkResult.IsDisposable {
 			return v.NewInvalidErrors(field, messageValidator.Message)
 		}
