@@ -2,12 +2,18 @@ package vext
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	v "github.com/RussellLuo/validating/v3"
 	"github.com/asaskevich/govalidator"
+	"github.com/th0th/disposableemail"
 	"golang.org/x/exp/slices"
 )
+
+var disposableEmail disposableemail.Service
+
+var once sync.Once
 
 // ASCII is a leaf validator factory used to create a validator, which will
 // succeed when the field's value contains only ASCII chars.
@@ -67,6 +73,26 @@ func DialString() *v.MessageValidator {
 // succeed when the field's value is an email.
 func Email() *v.MessageValidator {
 	return v.Is(govalidator.IsEmail).Msg("invalid email")
+}
+
+// EmailNonDisposable is a leaf validator factory used to create a validator, which will
+// succeed when the field's value is a non-disposable email address.
+// It uses the `is-email-disposable` package to check if the email domain is disposable.
+func EmailNonDisposable() *v.MessageValidator {
+	once.Do(func() {
+		disposableEmail2, err := disposableemail.New()
+		if err != nil {
+			panic(err)
+		}
+
+		disposableEmail = disposableEmail2
+	})
+
+	isValid := func(value string) bool {
+		checkResult := disposableEmail.Check(value)
+		return !checkResult.IsDisposable
+	}
+	return v.Is(isValid).Msg("is disposable e-mail address")
 }
 
 // Hash is a leaf validator factory used to create a validator, which will
