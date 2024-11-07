@@ -11,9 +11,10 @@ import (
 	"golang.org/x/exp/slices"
 )
 
-var disposableEmail disposableemail.Service
-
-var once sync.Once
+var (
+	once            sync.Once
+	disposableEmail disposableemail.Service
+)
 
 // ASCII is a leaf validator factory used to create a validator, which will
 // succeed when the field's value contains only ASCII chars.
@@ -80,19 +81,18 @@ func Email() *v.MessageValidator {
 // It uses the `is-email-disposable` package to check if the email domain is disposable.
 func EmailNonDisposable() *v.MessageValidator {
 	once.Do(func() {
-		disposableEmail2, err := disposableemail.New()
+		de, err := disposableemail.New()
 		if err != nil {
 			panic(err)
 		}
-
-		disposableEmail = disposableEmail2
+		disposableEmail = de
 	})
 
 	isValid := func(value string) bool {
 		checkResult := disposableEmail.Check(value)
 		return !checkResult.IsDisposable
 	}
-	return v.Is(isValid).Msg("is disposable e-mail address")
+	return v.Is(isValid).Msg("disposable email")
 }
 
 // Hash is a leaf validator factory used to create a validator, which will

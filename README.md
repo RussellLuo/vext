@@ -14,6 +14,7 @@ Currently supported:
 - [DataURI](https://pkg.go.dev/github.com/RussellLuo/vext#DataURI)
 - [DialString](https://pkg.go.dev/github.com/RussellLuo/vext#DialString)
 - [Email](https://pkg.go.dev/github.com/RussellLuo/vext#Email)
+- [EmailNonDisposable](https://pkg.go.dev/github.com/RussellLuo/vext#EmailNonDisposable)
 - [Hash](https://pkg.go.dev/github.com/RussellLuo/vext#Hash)
 - [HexNumber](https://pkg.go.dev/github.com/RussellLuo/vext#HexNumber)
 - [HexColor](https://pkg.go.dev/github.com/RussellLuo/vext#HexColor)
