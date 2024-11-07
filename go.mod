@@ -8,6 +8,6 @@ require (
 )
 
 require (
-	github.com/th0th/disposableemail v0.0.0-20241105162153-19b67fbf2960
+	github.com/th0th/disposableemail v0.0.2-0.20241107110532-1e027547679f
 	golang.org/x/exp v0.0.0-20220314205449-43aec2f8a4e7
 )
